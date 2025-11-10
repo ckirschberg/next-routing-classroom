@@ -29,6 +29,8 @@ export default function RootLayout({
               <Link href="/contact">Contact</Link>
 
               <Link href="/courses">Courses</Link>
+              <Link href="/events/createevent">Create Session</Link>
+              <Link href="/login">Login</Link>
             </nav>
           </header>
 

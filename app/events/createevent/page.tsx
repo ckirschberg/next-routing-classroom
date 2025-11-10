@@ -5,7 +5,7 @@ import classes from './ContainedInput.module.css';
 import { Button, Text } from "@mantine/core";
 
 import { DateTimePicker } from "@mantine/dates";
-
+import { supabase } from "../../lib/supabaseClient";
 import { useState } from "react";
 
 export default function CreateEventForm() {
@@ -21,21 +21,26 @@ export default function CreateEventForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!startsAt || !endsAt) return;
+    if (!startsAt || !endsAt) {
+      return;
+    }
 
-    const res = await fetch("/api/sessions", {
-      method: "POST",
-      body: JSON.stringify({
-        // venstre side af : = supabase tabellens kolonne.
-        // højre side af : = state variablen
+    const { data, error } = await supabase
+      .from("sessions")
+      .insert({
         starts_at: startsAt.toISOString(),
         ends_at: endsAt.toISOString(),
-        title: title
-      }),
-      headers: { "Content-Type": "application/json" },
-    });
+        title,
+      })
+      .select()
+      .single();
 
-    console.log(await res.json());
+    if (error) {
+      console.error("Insert error", error);
+      return;
+    }
+
+    console.log("Inserted row:", data);
   }
 
   return (
