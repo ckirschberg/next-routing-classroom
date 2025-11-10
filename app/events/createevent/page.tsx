@@ -1,6 +1,7 @@
 "use client";
-
+import { TextInput } from '@mantine/core';
 import "@mantine/dates/styles.css";
+import classes from './ContainedInput.module.css';
 import { Button, Text } from "@mantine/core";
 
 import { DateTimePicker } from "@mantine/dates";
@@ -8,17 +9,28 @@ import { DateTimePicker } from "@mantine/dates";
 import { useState } from "react";
 
 export default function CreateEventForm() {
-  const [date, setDate] = useState<Date | null>(new Date());
+  const date = new Date();
+  const hours = date.getHours();
+  const date2 = new Date();
+  date2.setHours(hours + 1);
+
+  const [startsAt, setStartsAt]= useState<Date | null>(date);
+  const [endsAt, setEndsAt] = useState<Date | null>(date2);
+  const [title, setTitle] = useState<string>("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!date) return;
+    if (!startsAt || !endsAt) return;
 
-    const res = await fetch("/api/events", {
+    const res = await fetch("/api/sessions", {
       method: "POST",
       body: JSON.stringify({
-        starts_at: date.toString(),
+        // venstre side af : = supabase tabellens kolonne.
+        // højre side af : = state variablen
+        starts_at: startsAt.toISOString(),
+        ends_at: endsAt.toISOString(),
+        title: title
       }),
       headers: { "Content-Type": "application/json" },
     });
@@ -32,12 +44,23 @@ export default function CreateEventForm() {
         Create your event here....
       </Text>
 
+      <TextInput label="Session Title" placeholder="NextJs 2" classNames={classes} style={{ width: "180px" }}
+        onChange={(e) => setTitle(e.target.value)} value={title}/>
+
       <DateTimePicker
         style={{ width: "180px" }}
         label="Event date"
-        value={date ? date.toISOString() : null} // or your preferred format
+        value={startsAt ? startsAt.toISOString() : null} // or your preferred format
         onChange={(value) => {
-          setDate(value ? new Date(value) : null);
+          setStartsAt(value ? new Date(value) : null);
+        }}
+      />
+      <DateTimePicker
+        style={{ width: "180px" }}
+        label="Event date"
+        value={endsAt ? endsAt.toISOString() : null} // or your preferred format
+        onChange={(value) => {
+          setEndsAt(value ? new Date(value) : null);
         }}
       />
 

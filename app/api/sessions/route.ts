@@ -18,9 +18,11 @@ export async function POST(req: Request) {
   // so that Postgres stores it as UTC.
 
   const { data, error } = await supabase
-    .from("events")
+    .from("sessions")
     .insert({
       starts_at: body.starts_at, // 2025-11-02T11:00:00.000Z
+      ends_at: body.ends_at, // 2025-11-02T12:00:00.000Z
+      title: body.title
     })
     .select()
     .single();
