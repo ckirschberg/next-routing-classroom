@@ -14,8 +14,8 @@ export default function CreateEventForm() {
   const date2 = new Date();
   date2.setHours(hours + 1);
 
-  const [startsAt, setStartsAt]= useState<Date | null>(date);
-  const [endsAt, setEndsAt] = useState<Date | null>(date2);
+  const [startsAt, setStartsAt]= useState<Date | null>(null);
+  const [endsAt, setEndsAt] = useState<Date | null>(null);
   const [title, setTitle] = useState<string>("");
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,7 +49,8 @@ export default function CreateEventForm() {
 
       <DateTimePicker
         style={{ width: "180px" }}
-        label="Event date"
+        label="Start dato/tid"
+        maxDate={endsAt ? endsAt : undefined}
         value={startsAt ? startsAt.toISOString() : null} // or your preferred format
         onChange={(value) => {
           setStartsAt(value ? new Date(value) : null);
@@ -57,7 +58,8 @@ export default function CreateEventForm() {
       />
       <DateTimePicker
         style={{ width: "180px" }}
-        label="Event date"
+        label="Slut dato/tid"
+        minDate={startsAt ? startsAt : undefined}
         value={endsAt ? endsAt.toISOString() : null} // or your preferred format
         onChange={(value) => {
           setEndsAt(value ? new Date(value) : null);
