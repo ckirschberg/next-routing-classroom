@@ -1,25 +1,40 @@
-// app/api/events/route.ts
-
+// app/api/sessions/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { supabase } from "../../lib/supabaseClient";
-
 
 export async function POST(req: Request) {
   const body = await req.json();
 
-  console.log("body", body);
+  const authHeader = req.headers.get("authorization");
+  const jwt =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.slice("Bearer ".length)
+      : null;
 
-  // SUPABASE PART:
-  // In Supabase, column type should be `timestamptz` (timestamp with time zone)
-  // so that Postgres stores it as UTC.
+  if (!jwt) {
+    return NextResponse.json(
+      { error: "Not authenticated" },
+      { status: 401 }
+    );
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    },
+  });
 
   const { data, error } = await supabase
     .from("sessions")
     .insert({
-      starts_at: body.starts_at, // 2025-11-02T11:00:00.000Z
-      ends_at: body.ends_at, // 2025-11-02T12:00:00.000Z
-      title: body.title
+      starts_at: body.starts_at,
+      ends_at: body.ends_at,
+      title: body.title,
     })
     .select()
     .single();

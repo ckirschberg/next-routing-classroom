@@ -1,12 +1,14 @@
 "use client";
-import { TextInput } from '@mantine/core';
+import { TextInput } from "@mantine/core";
 import "@mantine/dates/styles.css";
-import classes from './ContainedInput.module.css';
+import classes from "./ContainedInput.module.css";
 import { Button, Text } from "@mantine/core";
 
 import { DateTimePicker } from "@mantine/dates";
 import { supabase } from "../../lib/supabaseClient";
 import { useState } from "react";
+
+
 
 export default function CreateEventForm() {
   const date = new Date();
@@ -14,7 +16,11 @@ export default function CreateEventForm() {
   const date2 = new Date();
   date2.setHours(hours + 1);
 
-  const [startsAt, setStartsAt]= useState<Date | null>(null);
+
+
+
+
+  const [startsAt, setStartsAt] = useState<Date | null>(null);
   const [endsAt, setEndsAt] = useState<Date | null>(null);
   const [title, setTitle] = useState<string>("");
 
@@ -24,6 +30,27 @@ export default function CreateEventForm() {
     if (!startsAt || !endsAt) {
       return;
     }
+
+    
+
+    //Get current session (JWT) from supabase
+    // const {
+    //   data: { session },
+    // } = await supabase.auth.getSession();
+
+    // const token = session?.access_token; // læse jwt
+    //   const res = await fetch("/api/sessions", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     starts_at: startsAt.toISOString(),
+    //     ends_at: endsAt.toISOString(),
+    //     title,
+    //   }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //   },
+    // });
 
     const { data, error } = await supabase
       .from("sessions")
@@ -49,8 +76,14 @@ export default function CreateEventForm() {
         Create your event here....
       </Text>
 
-      <TextInput label="Session Title" placeholder="NextJs 2" classNames={classes} style={{ width: "180px" }}
-        onChange={(e) => setTitle(e.target.value)} value={title}/>
+      <TextInput
+        label="Session Title"
+        placeholder="NextJs 2"
+        classNames={classes}
+        style={{ width: "180px" }}
+        onChange={(e) => setTitle(e.target.value)}
+        value={title}
+      />
 
       <DateTimePicker
         style={{ width: "180px" }}
